@@ -5,21 +5,6 @@ on:
       - main
       - develop
 
-steps: &steps
-  - name: Clone repository
-    uses: actions/checkout@v3
-
-  - name: Create a file
-    env:
-      MY_MSG: ${{ vars.MY_MSG }}
-    run: echo "$MY_MSG" > data.txt
-
-  - name: Upload to Deno Deploy
-    uses: denoland/deployctl@v1
-    with:
-      project: "dannygim-fresh-demo"
-      entrypoint: "./main.ts"
-
 jobs:
   deploy:
     name: Deploy
@@ -29,7 +14,20 @@ jobs:
       contents: read # Needed to clone the repository
     if: github.ref == 'refs/heads/main'
     environment: Production
-    steps: *steps
+    steps: &steps
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Create a file
+        env:
+          MY_MSG: ${{ vars.MY_MSG }}
+        run: echo "$MY_MSG" > data.txt
+
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "dannygim-fresh-demo"
+          entrypoint: "./main.ts"
     
   dev_deploy:
     name: Dev Deploy

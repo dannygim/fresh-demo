@@ -21,7 +21,7 @@ jobs:
       - name: Create a file
         env:
           MY_MSG: ${{ vars.MY_MSG }}
-        run: echo "$MY_MSG" > data.txt
+        run: echo "MSG=$MY_MSG" > data.txt
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1

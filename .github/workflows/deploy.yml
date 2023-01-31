@@ -12,8 +12,8 @@ jobs:
     permissions:
       id-token: write # Needed for auth with Deno Deploy
       contents: read # Needed to clone the repository
-    # environment: Production # Preview
-
+    if: github.ref == 'refs/heads/main'
+    environment: Production
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -21,7 +21,30 @@ jobs:
       - name: Create a file
         env:
           MY_MSG: ${{ vars.MY_MSG }}
-        run: echo "MSG=$MY_MSG" > data.txt
+        run: echo "$MY_MSG" > data.txt
+
+      - name: Upload to Deno Deploy
+        uses: denoland/deployctl@v1
+        with:
+          project: "dannygim-fresh-demo"
+          entrypoint: "./main.ts"
+
+  dev_deploy:
+    name: Dev Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Needed for auth with Deno Deploy
+      contents: read # Needed to clone the repository
+    if: github.ref != 'refs/heads/main'
+    environment: Preview
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Create a file
+        env:
+          MY_MSG: ${{ vars.MY_MSG }}
+        run: echo "$MY_MSG" > data.txt
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
